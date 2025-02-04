@@ -1,0 +1,32 @@
+name: Deploy Odoo Custom Module
+
+on:
+  push:
+    branches:
+      - main  # Trigger workflow on push to the 'main' branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+
+    - name: Deploy to Odoo Server
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        ODOO_SERVER: ${{ secrets.ODOO_SERVER }}
+        ODOO_PATH: ${{ secrets.ODOO_PATH }}
+      run: |
+        echo "$SSH_PRIVATE_KEY" > private_key
+        chmod 600 private_key
+        
+        # Connect to the server and deploy the custom module
+        rsync -avz -e "ssh -i private_key -o StrictHostKeyChecking=no" ./custom_addons/ user@$ODOO_SERVER:$ODOO_PATH/custom_addons/
+        
+        # Restart Odoo service
+        ssh -i private_key -o StrictHostKeyChecking=no user@$ODOO_SERVER 'sudo systemctl restart odoo'
+
+    - name: Clean Up
+      run: rm -f private_key
