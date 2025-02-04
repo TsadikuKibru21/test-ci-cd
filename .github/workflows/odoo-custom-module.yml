@@ -9,6 +9,10 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
 
+    env:
+      ODOO_SERVER: ${{ secrets.ODOO_SERVER }}
+      ODOO_PATH: ${{ secrets.ODOO_PATH }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -20,12 +24,7 @@ jobs:
           eval "$(ssh-agent -s)"
           ssh-add private_key
 
-      - name: Disable Strict Host Key Checking
+      - name: Deploy custom module
         run: |
-          mkdir -p ~/.ssh
-          echo -e "Host *\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
-
-      - name: Copy module to Odoo server
-        run: |
-          scp -i private_key -r ./custom_module root@164.92.160.74:/opt/odoo17e/custom-addons/
-          ssh -i private_key root@164.92.160.74 "sudo service odoo restart"
+          rsync -avz -e "ssh -i private_key -o StrictHostKeyChecking=no" ./custom_addons/ user@$ODOO_SERVER:$ODOO_PATH/custom_addons/
+          ssh -i private_key -o StrictHostKeyChecking=no user@$ODOO_SERVER 'sudo systemctl restart odoo'
