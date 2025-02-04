@@ -1,0 +1,11 @@
+<odoo>
+    <!-- Director Group -->
+    <record id="group_kpi_director" model="res.groups">
+        <field name="name">Is Director HMS</field>
+    </record>
+    
+    <!-- User Group -->
+    <record id="group_kpi_user" model="res.groups">
+        <field name="name">Is User HMS</field>
+    </record>
+</odoo>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <template id="patients_page" inherit_id="website.layout" name="Hospital Patients">
+    <xpath expr="//main" position="inside">
+      <h1>Hospital Patients</h1>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Age</th>
+          </tr>
+        </thead>
+        <tbody>
+          <t t-foreach="patients" t-as="patient">
+            <tr>
+              <td><t t-esc="patient.name"/></td>
+              <td><t t-esc="patient.age"/></td>
+            </tr>
+          </t>
+        </tbody>
+      </table>
+    </xpath>
+  </template>
+</odoo>

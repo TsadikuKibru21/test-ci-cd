@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_hospital_appointment_form" model="ir.ui.view">
+        <field name="name">hospital.appointment.form</field>
+        <field name="model">hospital.appointment</field>
+        <field name="arch" type="xml">
+            <form>
+                 <header>
+                    <button id="button_create_appointment" name="%(action_create_appointment)d" string="Create Appointment" class="btn-primary" type="action"/>
+                    
+                </header>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="patient_id"/>
+                        <field name="age" readonly="1" force_save="1"/>
+                        <field name="doctor_id"/>
+                        <field name="state"/>
+                        <field name="note"/>
+                        <field name="date_appointment"/>
+
+
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="message_ids" options="{'post_refresh': 'recipients'}"/>
+                </div>
+            </form>
+        </field>
+
+    </record>
+    <record id="view_hospital_appointment_tree" model="ir.ui.view">
+        <field name="name">hospital.appointment.tree</field>
+        <field name="model">hospital.appointment</field>
+        <field name="arch" type="xml">
+            <tree sample="1">
+                <header>
+                    <button name="action_done" string="Mark As Done" class="btn-primary"
+                            type="object"/>
+                </header>
+                <field name="name"/>
+                <field name="patient_id"/>
+                <field name="age"/>
+                <field name="doctor_id"/>
+                <field name="state" optional="show"/>
+                <field name="note" optional="hide"/>
+                <field name="date_appointment" optional="show"/>
+
+
+            </tree>
+        </field>
+    </record>
+    <record id="view_hospital_appointment_search" model="ir.ui.view">
+        <field name="name">hospital.appointment.search</field>
+        <field name="model">hospital.appointment</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+            </search>
+        </field>
+    </record>
+    <record id="action_hospital_appointment" model="ir.actions.act_window">
+        <field name="name">Appointments</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">hospital.appointment</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="Hospital_management.view_hospital_appointment_search"/>
+    </record>
+
+
+    <menuitem
+            id="menu_appointments"
+            name="Create New Appointment"
+            action="action_create_appointment"
+            parent="menu_hospital_appointment"
+            sequence="20"/>
+  
+    <menuitem
+            id="menu_create_appointments"
+            name="Appointments"
+            action="action_hospital_appointment"
+            parent="menu_hospital_appointment"
+            sequence="20"/>
+
+</odoo>

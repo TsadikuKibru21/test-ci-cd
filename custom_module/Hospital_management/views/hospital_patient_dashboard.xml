@@ -1,0 +1,9 @@
+<!-- views/hospital_patient_dashboard_template.xml -->
+<odoo>
+    <template id="hospital_patient_dashboard_template">
+        <div>
+            <h1>Patient Dashboard</h1>
+            <canvas id="patientChart"></canvas>
+        </div>
+    </template>
+</odoo>
