@@ -1,32 +1,25 @@
-name: Deploy Odoo Custom Module
+name: Odoo CI/CD Pipeline
 
 on:
   push:
     branches:
-      - main  # Trigger workflow on push to the 'main' branch
+      - main  # Trigger on push to the main branch
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Deploy to Odoo Server
-      env:
-        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-        ODOO_SERVER: ${{ secrets.ODOO_SERVER }}
-        ODOO_PATH: ${{ secrets.ODOO_PATH }}
-      run: |
-        echo "$SSH_PRIVATE_KEY" > private_key
-        chmod 600 private_key
-        
-        # Connect to the server and deploy the custom module
-        rsync -avz -e "ssh -i private_key -o StrictHostKeyChecking=no" ./custom_addons/ user@$ODOO_SERVER:$ODOO_PATH/custom_addons/
-        
-        # Restart Odoo service
-        ssh -i private_key -o StrictHostKeyChecking=no user@$ODOO_SERVER 'sudo systemctl restart odoo'
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_PRIVATE_KEY }}  # Your private SSH key
+          known_hosts: ${{ secrets.KNOWN_HOSTS }}  # Known hosts entry for your server
 
-    - name: Clean Up
-      run: rm -f private_key
+      - name: Copy module to Odoo server
+        run: |
+          scp -r ./custom_module root@164.92.160.74:/opt/odoo17e/custom-addons/
+          ssh root@164.92.160.74 "sudo service odoo restart"
