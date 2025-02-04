@@ -26,5 +26,5 @@ jobs:
 
       - name: Deploy custom module
         run: |
-          rsync -avz -e "ssh -i private_key -o StrictHostKeyChecking=no" ./custom_addons/ user@$ODOO_SERVER:$ODOO_PATH/custom_addons/
+          rsync -avz -e "ssh -i private_key -o StrictHostKeyChecking=no" ./custom_addons/ root@$ODOO_SERVER:$ODOO_PATH/custom_addons/
           ssh -i private_key -o StrictHostKeyChecking=no root@$ODOO_SERVER 'sudo systemctl restart odoo'
