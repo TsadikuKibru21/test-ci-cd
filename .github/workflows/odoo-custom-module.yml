@@ -3,7 +3,7 @@ name: Odoo CI/CD Pipeline
 on:
   push:
     branches:
-      - main  # Trigger on push to the main branch
+      - main
 
 jobs:
   deploy:
@@ -13,13 +13,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Install SSH key
-        uses: shimataro/ssh-key-action@v2
-        with:
-          key: ${{ secrets.SSH_PRIVATE_KEY }}  # Your private SSH key
-          known_hosts: ${{ secrets.KNOWN_HOSTS }}  # Known hosts entry for your server
+      - name: Add SSH key
+        run: |
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key
+          chmod 600 private_key
+          eval "$(ssh-agent -s)"
+          ssh-add private_key
+
+      - name: Disable Strict Host Key Checking
+        run: |
+          mkdir -p ~/.ssh
+          echo -e "Host *\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
 
       - name: Copy module to Odoo server
         run: |
-          scp -r ./custom_module root@164.92.160.74:/opt/odoo17e/custom-addons/
-          ssh root@164.92.160.74 "sudo service odoo restart"
+          scp -i private_key -r ./custom_module root@164.92.160.74:/opt/odoo17e/custom-addons/
+          ssh -i private_key root@164.92.160.74 "sudo service odoo restart"
